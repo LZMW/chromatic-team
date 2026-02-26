@@ -118,6 +118,21 @@ description: Chromatic (幻彩工坊) team coordinator skill. Analyzes UI/UX des
 3. **结果导向** - 目标是完成任务，不是遵循流程
 4. **透明沟通** - 向用户同步进度和决策
 
+## 子代理运行模式
+
+> ⚠️ **重要**：部分专家配置了 MCP 工具，必须前台运行！
+
+| 专家 | MCP 工具 | 运行模式 |
+|------|----------|----------|
+| Prism | sequential-thinking, context7 | **必须前台运行** |
+| Flow | sequential-thinking | **必须前台运行** |
+| Spark | sequential-thinking | **必须前台运行** |
+| Pixel | 基础工具 | 可后台运行 |
+| Grid | 基础工具 | 可后台运行 |
+| Lens | sequential-thinking, context7, playwright, zai-mcp-server | **必须前台运行** |
+
+> MCP 工具在后台子代理中不可用，调用配置了 MCP 工具的专家时必须前台运行。
+
 ## 用户需求确认清单
 
 在开始设计前，使用 AskUserQuestion 确认：
