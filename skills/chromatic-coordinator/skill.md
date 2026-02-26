@@ -118,20 +118,47 @@ description: Chromatic (幻彩工坊) team coordinator skill. Analyzes UI/UX des
 3. **结果导向** - 目标是完成任务，不是遵循流程
 4. **透明沟通** - 向用户同步进度和决策
 
-## 子代理运行模式
+## 团队成员 MCP 能力
 
-> ⚠️ **重要**：部分专家配置了 MCP 工具，必须前台运行！
+| 代号 | 可授权的 MCP 工具 | 授权条件 |
+|------|-------------------|----------|
+| Prism | mcp__sequential-thinking__*, mcp__context7__* | 需要深度推导风格或查询设计趋势时 |
+| Flow | mcp__sequential-thinking__* | 需要复杂布局逻辑推导时 |
+| Spark | mcp__sequential-thinking__* | 需要设计复杂交互动效逻辑时 |
+| Pixel | 无 | 不使用 MCP |
+| Grid | 无 | 不使用 MCP |
+| Lens | mcp__sequential-thinking__*, mcp__context7__*, mcp__plugin_playwright_playwright__*, mcp__zai-mcp-server__* | 需要自动化审查或视觉分析时 |
 
-| 专家 | MCP 工具 | 运行模式 |
-|------|----------|----------|
-| Prism | sequential-thinking, context7 | **必须前台运行** |
-| Flow | sequential-thinking | **必须前台运行** |
-| Spark | sequential-thinking | **必须前台运行** |
-| Pixel | 基础工具 | 可后台运行 |
-| Grid | 基础工具 | 可后台运行 |
-| Lens | sequential-thinking, context7, playwright, zai-mcp-server | **必须前台运行** |
+## ⚠️ MCP 工具动态授权机制
 
-> MCP 工具在后台子代理中不可用，调用配置了 MCP 工具的专家时必须前台运行。
+### 核心原则
+
+**子代理配置中声明了 MCP 工具权限，但必须由协调器授权才能使用。**
+
+### 授权流程
+
+**阶段一：事前预估与方案制定**
+```
+用户任务 → 协调器分析 → 预估各成员 MCP 需求 → 制定方案 → 征求用户决策
+```
+
+**阶段二：进程动态调整**
+```
+工作进程深入 → 发现需要调整 → 征求用户同意 → 更新授权 → 继续执行
+```
+
+### 触发子代理时的授权格式
+
+```markdown
+# 用户同意使用 MCP 时
+🔓 MCP 授权（用户已同意）：
+此次任务可使用以下 MCP 工具：
+- mcp__xxx__tool1: [用途说明]
+
+# 用户拒绝或不需 MCP 时
+🔒 MCP 限制：
+此次任务不使用 MCP 工具，请使用基础工具完成。
+```
 
 ## 用户需求确认清单
 
