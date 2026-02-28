@@ -48,12 +48,12 @@ description: Chromatic (幻彩工坊) team coordinator skill. Analyzes UI/UX des
 
 | 软件类型 | 推荐风格 | 触发专家组合 |
 |----------|----------|--------------|
-| 企业后台 | 清晰、高对比度、Bento Grid | Prism → Flow → Grid → Pixel |
-| 创意落地页 | 大字体、视差滚动、高饱和度 | Prism → Spark → Pixel |
-| 移动工具 | 极简、圆角大按钮、底部导航 | Flow → Prism → Pixel |
-| 数据仪表盘 | 深色主题、数据可视化、卡片 | Prism → Grid → Flow → Pixel |
-| 金融科技 | 蓝色系、专业感、高信任度 | Prism → Grid → Pixel |
-| 社交应用 | 活泼渐变、圆角设计、趣味元素 | Prism → Spark → Pixel |
+| 企业后台 | 清晰、高对比度、Bento Grid | Prism → Flow → Grid → Pixel → Lens |
+| 创意落地页 | 大字体、视差滚动、高饱和度 | Prism → Spark → Pixel → Lens |
+| 移动工具 | 极简、圆角大按钮、底部导航 | Flow → Prism → Pixel → Lens |
+| 数据仪表盘 | 深色主题、数据可视化、卡片 | Prism → Grid → Flow → Pixel → Lens |
+| 金融科技 | 蓝色系、专业感、高信任度 | Prism → Grid → Pixel → Lens |
+| 社交应用 | 活泼渐变、圆角设计、趣味元素 | Prism → Spark → Pixel → Lens |
 
 ## 任务类型映射
 
@@ -127,7 +127,7 @@ description: Chromatic (幻彩工坊) team coordinator skill. Analyzes UI/UX des
 | Spark | mcp__sequential-thinking__* | 需要设计复杂交互动效逻辑时 |
 | Pixel | 无 | 不使用 MCP |
 | Grid | 无 | 不使用 MCP |
-| Lens | mcp__sequential-thinking__*, mcp__context7__*, mcp__plugin_playwright_playwright__*, mcp__zai-mcp-server__* | 需要自动化审查或视觉分析时 |
+| Lens | mcp__playwright__*, mcp__zai-mcp-server__* | 需要浏览器自动化审查或图像分析时 |
 
 ## ⚠️ MCP 工具动态授权机制
 
@@ -220,7 +220,7 @@ description: Chromatic (幻彩工坊) team coordinator skill. Analyzes UI/UX des
 
 ### 传递模式
 
-#### 串行阶段（视觉定调 → 布局 → 设计系统 → 动效 → 代码）
+#### 串行阶段（视觉定调 → 布局 → 设计系统 → 动效 → 代码 → 质量审查）
 
 ```markdown
 使用 chromatic-[expert] 子代理执行任务：
@@ -275,7 +275,7 @@ description: Chromatic (幻彩工坊) team coordinator skill. Analyzes UI/UX des
 3. **[Grid 配色方案]** - CSS 变量、Design Tokens
 4. **[Spark 交互亮点]** - 关键动效、缓动函数、性能建议
 5. **[Pixel 执行代码]** - React/Vue + Tailwind CSS 可直接使用代码
-6. **[Lens 质量审查]** - 问题清单、评分、修复建议（可选）
+6. **[Lens 质量审查]** - 问题清单、评分、修复建议
 
 ## 触发专家的方式
 
