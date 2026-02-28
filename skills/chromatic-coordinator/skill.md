@@ -64,8 +64,8 @@ description: Chromatic (幻彩工坊) team coordinator skill. Analyzes UI/UX des
 | 交互动效 | 动画、交互、hover、转场、微交互 | Spark | 单专家 | 可能需要 |
 | 代码实现 | 前端、组件、Tailwind、HTML/CSS、React | Pixel | 链式 | 通常不需要 |
 | 设计系统 | Design Token、一致性、规范、配色盘 | Grid | 顾问支持 | 通常不需要 |
-| 质量审查 | 审查、检查、评审、合规、无障碍验证 | Lens | 终审模式 | 可能需要 |
-| 完整设计 | UI设计、页面设计、视觉方案 | 全员 | 链式+审查 | 按阶段 |
+| 质量审查 | 审查、检查、评审、合规、无障碍验证 | Lens | 单专家/串行终审 | 可能需要 |
+| 完整设计 | UI设计、页面设计、视觉方案 | 全员 | 链式+终审 | 按阶段 |
 
 ## 标准设计流程
 
@@ -83,12 +83,76 @@ description: Chromatic (幻彩工坊) team coordinator skill. Analyzes UI/UX des
 5. 使用 `chromatic-pixel` 生成最终落地代码
 6. 使用 `chromatic-lens` 进行质量审查和问题识别
 
-### 终审模式
+### Lens 的三种使用模式
 
-完整设计流程结束后，Lens 作为"终审官"进行质量把关：
+#### 模式A：串行终审（完整设计流程的终审环节）
+
+**使用场景**：完整 UI 设计流程的最后环节
+
+**执行顺序**：
+```
+Prism → Flow → Grid → Spark → Pixel → Lens(串行终审)
+```
+
+**触发指令**：
+```markdown
+使用 chromatic-lens 子代理执行串行终审：
+
+**📂 串行终审模式**:
+- 前序索引: {项目}/.chromatic/phases/05_code/INDEX.md（请先读取 Pixel 的代码产出）
+- 输出目录: {项目}/.chromatic/phases/06_review/（创建此目录）
+- 审查范围: 完整设计流程的所有产出（Prism/Flow/Grid/Spark/Pixel）
+
+**📋 输出要求**:
+- INDEX.md: 必须创建（审查概要+问题清单+修复建议+评分）
+- inbox.md: 发送 REVIEW_COMPLETE 消息
+```
+
+#### 模式B：独立审查（用户单独要求审查）
+
+**使用场景**：用户要求单独审查某个界面/代码/截图
+
+**触发指令**：
+```markdown
+使用 chromatic-lens 子代理执行独立审查：
+
+**📂 独立审查模式**:
+- 审查目标: [用户提供的 URL / 截图路径 / 代码文件]
+- 输出目录: {项目}/.chromatic/outputs/lens/（输出到此）
+
+**📋 输出要求**:
+- 审查报告: 创建完整的审查报告（问题分级+修复建议）
+- inbox.md: 发送 REVIEW_COMPLETE 消息
+```
+
+**平台适配说明**：
+- ✅ **Web 应用**：优先使用浏览器自动化直接审查
+- ❌ **非浏览器应用**（桌面/移动端）：必须要求用户提供截图
+
+#### 模式C：问题修复后的再次审查
+
+**使用场景**：串行终审发现问题后，专家修复完成，需要再次验证
+
+**触发指令**：
+```markdown
+使用 chromatic-lens 子代理执行修复验证：
+
+**📂 修复验证模式**:
+- 前序审查: {项目}/.chromatic/phases/06_review/INDEX.md（读取之前的问题清单）
+- 修复记录: {项目}/.chromatic/outputs/fixes/（检查修复内容）
+- 输出目录: {项目}/.chromatic/phases/07_re-review/（创建此目录）
+
+**📋 输出要求**:
+- INDEX.md: 验证结果（问题是否解决+是否通过终审）
+- inbox.md: 发送 REVIEW_PASS 或 REVIEW_FAIL 消息
+```
+
+### 终审循环机制
 
 ```
 设计方案完成 → Lens 审查 → 发现问题 → 反馈修复 → 再次审查 → 通过交付
+                                      ↑____________↓
+                                   循环直到通过
 ```
 
 ## ⚠️ 委托优先原则
@@ -210,9 +274,15 @@ description: Chromatic (幻彩工坊) team coordinator skill. Analyzes UI/UX des
 │   ├── 02_layout/            # Flow 布局设计
 │   ├── 03_tokens/            # Grid 设计系统
 │   ├── 04_motion/            # Spark 交互动效
-│   └── 05_code/              # Pixel 代码实现
-├── outputs/                   # 并行产出（审查阶段）
-│   ├── lens/                 # Lens 审查报告
+│   ├── 05_code/              # Pixel 代码实现
+│   ├── 06_review/            # Lens 串行终审
+│   │   ├── INDEX.md          # 审查报告索引
+│   │   └── *.md              # 详细问题清单
+│   └── 07_re-review/         # Lens 修复验证（可选）
+├── outputs/                   # 独立产出（独立任务、多方案比选）
+│   ├── lens/                 # Lens 独立审查报告
+│   │   ├── report.md         # 审查报告
+│   │   └── screenshots/      # 审查截图
 │   └── fixes/                # 修复记录
 ├── inbox.md                   # 统一消息收件箱
 └── summary.md                 # 最终设计汇总
@@ -234,7 +304,14 @@ description: Chromatic (幻彩工坊) team coordinator skill. Analyzes UI/UX des
 - INDEX.md: 必须创建（概要+文件清单+注意事项）
 ```
 
-#### 并行阶段（质量审查、多方案比选）
+#### 并行阶段（多方案比选、多专家评审）
+
+> ⚠️ **注意**: Lens（质量审查）不参与并行阶段，仅在串行终审或独立审查时使用。
+
+**使用场景**：
+- Prism 同时生成 3 种风格方案供选择
+- 多个专家同时审查不同模块的代码
+- Flow + Spark 同时设计动效和布局
 
 ```markdown
 **📂 产出路径**:
@@ -286,3 +363,108 @@ description: Chromatic (幻彩工坊) team coordinator skill. Analyzes UI/UX des
 # 方式2：生成匹配的任务描述
 "现在需要 [任务描述]"  # 系统自动匹配
 ```
+
+## Lens 的 MCP 工具使用策略
+
+### 工具选择决策树
+
+```
+用户请求审查
+    │
+    ├─ 是 Web 应用且能访问？
+    │   └─ ✅ 使用 mcp__playwright__* （浏览器自动化审查）
+    │       ├─ browser_navigate: 导航到 URL
+    │       ├─ browser_snapshot: 获取页面结构（含 accessibility tree）
+    │       ├─ browser_take_screenshot: 截图记录
+    │       ├─ browser_resize: 测试响应式
+    │       ├─ browser_click/type/press_key: 交互测试
+    │       ├─ browser_console_messages: 检查控制台错误
+    │       └─ browser_network_requests: 检查网络请求
+    │
+    └─ 非浏览器应用 / 仅提供截图？
+        └─ ✅ 使用 mcp__zai-mcp-server__* （图像分析）
+            ├─ analyze_image: 分析 UI 截图
+            ├─ diagnose_error_screenshot: 诊断错误界面
+            └─ ui_diff_check: 对比设计稿 vs 实现
+```
+
+### Lens 授权示例
+
+#### 示例1: Web 应用完整审查（🔴 必要级）
+
+```markdown
+使用 chromatic-lens 子代理审查 Web 应用：
+
+🔓 MCP 授权（必要工具，用户已同意）：
+🔴 必要工具（请**优先使用**）：
+- mcp__playwright__browser_navigate: 访问目标 URL
+- mcp__playwright__browser_take_screenshot: 截图保存
+- mcp__zai-mcp-server__analyze_image: **分析截图内容**（对比度、视觉一致性、布局问题等）
+- mcp__playwright__browser_snapshot: 获取 accessibility tree（ARIA 结构验证）
+- mcp__playwright__browser_resize: 测试响应式（375px/768px/1280px）
+- mcp__playwright__browser_console_messages: 检查 JavaScript 错误
+- mcp__playwright__browser_network_requests: 检查失败请求
+
+💡 使用建议：
+1. navigate → 访问目标 URL
+2. take_screenshot → 截图
+3. **analyze_image → 分析截图**（关键步骤！检测对比度、视觉问题）
+4. snapshot → 获取 accessibility tree 进行 ARIA 验证
+5. resize → 调整浏览器尺寸
+6. take_screenshot + analyze_image → 分析每个尺寸的截图
+7. console_messages + network_requests → 检查错误
+
+⚠️ 注意：playwright 负责截图，analyze_image 负责分析，两者配合使用
+```
+
+#### 示例2: 桌面/移动应用截图分析（🟡 推荐级）
+
+```markdown
+使用 chromatic-lens 子代理分析应用截图：
+
+🔓 MCP 授权（推荐工具，用户已同意）：
+🟡 推荐工具（**建议主动使用**）：
+- mcp__zai-mcp-server__analyze_image: 分析 UI 截图，识别设计问题
+- mcp__zai-mcp-server__ui_diff_check: 对比设计稿与实际实现（如有设计稿）
+
+💡 使用建议：
+- 在审查桌面应用/移动端 App 截图时使用
+- 用于对比设计稿 vs 实际实现
+- 检测视觉一致性问题
+```
+
+#### 示例3: 静态代码审查（🟢 可选级）
+
+```markdown
+使用 chromatic-lens 子代理审查代码：
+
+🔓 MCP 授权（可选工具，用户已同意）：
+🟢 可选工具（如有需要可使用）：
+- 本次任务不使用 MCP 工具，请使用基础工具（Read/Grep/Glob）完成
+
+💡 使用建议：
+- 使用 Grep 搜索 Design Token 使用情况
+- 检查 CSS 变量是否正确引用
+- 验证组件是否符合 Design System 规范
+```
+
+### 无障碍审查能力说明
+
+**当前工具能力**：
+- ✅ `browser_take_screenshot` + `analyze_image`: 截图并分析对比度、视觉一致性
+- ✅ `browser_snapshot`: 获取 accessibility tree（验证 ARIA 结构）
+- ✅ `analyze_image`: 通过图像分析检测视觉问题（对比度、布局、尺寸等）
+
+**无障碍审查工作流**：
+```
+1. playwright 截图 → 2. analyze_image 分析 → 3. 识别无障碍问题
+   ├─ 对比度检查: analyze_image 可以识别颜色对比度
+   ├─ 触摸目标: analyze_image 可以估算按钮/链接尺寸
+   ├─ ARIA 结构: browser_snapshot 获取语义树
+   └─ 视觉层次: analyze_image 分析信息层级
+```
+
+**工具配合说明**：
+- **playwright**: 负责操作浏览器和截图
+- **analyze_image**: 负责分析截图内容（包括无障碍问题）
+- **snapshot**: 负责获取语义结构（补充 ARIA 验证）
