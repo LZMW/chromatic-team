@@ -43,18 +43,6 @@ cp -r "N:\编程备份\3.0团队\chromatic-team" "C:\Users\Mr.Chen\.claude\skill
 
 ### Step 3：验证安装结构
 
-安装完成后，应具备以下目录结构：
-
-```
-C:\Users\Mr.Chen\.claude\skills\chromatic-team\
-├── README.md
-├── INSTALL.md
-├── agents\
-│   ├── chromatic-prism.md
-│   ├── chromatic-flow.md
-│   ├── chromatic-spark.md
-│   ├── chromatic-pixel.md
-│   ├── chromatic-grid.md
 │   └── chromatic-lens.md
 └── skills\
     └── chromatic-coordinator\
